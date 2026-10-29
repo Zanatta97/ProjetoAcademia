@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> TITAN FIT — UI Kit & Protótipo (Força & Foco)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono para números alinhados -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        app: {
+                            bg: '#0F1016',         // Grafite escuro (Fundo Principal)
+                            card: '#1C1E26',       // Cinza escuro frio (Superfícies)
+                            border: '#2A2D3A',     // Borda sutil
+                            primary: '#0066FF',    // Azul Elétrico
+                            royal: '#2563EB',      // Azul Royal
+                            amber: '#F59E0B',      // Âmbar / Dourado (Estímulo)
+                            textMain: '#F3F4F6',   // Branco suave
+                            textMuted: '#9CA3AF',  // Cinza médio
+                        },
+                        semantic: {
+                            success: '#22C55E',    // Série concluída / Evolução
+                            warmup: '#EAB308',     // Aquecimento / Descanso rodando
+                            failure: '#EF4444',    // Falha / Drop-set / Finalizar
+                            pr: '#3B82F6',         // Recorde Pessoal
+                            biset: '#8B5CF6',      // Bi-set / Conjugado
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-main: #0F1016;
+            --bg-card: #1C1E26;
+            --border-subtle: #2A2D3A;
+            --primary-electric: #0066FF;
+            --primary-royal: #2563EB;
+            --accent-amber: #F59E0B;
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+        }
+
+        body {
+            background-color: #090A0F;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Gradientes Sutis */
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #0066FF 0%, #2563EB 100%);
+        }
+        
+        .bg-gradient-amber {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        }
+
+        .bg-gradient-card-highlight {
+            background: linear-gradient(180deg, rgba(0, 102, 255, 0.14) 0%, rgba(28, 30, 38, 0.95) 100%);
+        }
+
+        .bg-gradient-pr-row {
+            background: linear-gradient(90deg, rgba(34, 197, 94, 0.14) 0%, rgba(245, 158, 11, 0.08) 100%);
+        }
+
+        /* Scrollbar fina para o container do celular */
+        .phone-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .phone-scroll::-webkit-scrollbar-track {
+            background: #0F1016;
+        }
+        .phone-scroll::-webkit-scrollbar-thumb {
+            background: #2A2D3A;
+            border-radius: 9999px;
+        }
+
+        /* Animações suaves */
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.65; }
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Remove setas de input number */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col lg:flex-row items-center lg:items-start justify-center p-4 md:p-8 gap-8 max-w-[1440px] mx-auto">
+
+    <!-- Toast de Notificação (Cópia de HEX ou Feedback do App) -->
+    <div id="global-toast" class="fixed top-5 right-5 z-50 transform translate-y-[-150%] opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 px-4 py-3 rounded-xl bg-[#1C1E26] border border-[#2A2D3A] shadow-2xl">
+        <div id="toast-icon" class="w-2.5 h-2.5 rounded-full bg-[#0066FF]"></div>
+        <span id="toast-text" class="text-sm font-medium text-[#F3F4F6]">Código copiado!</span>
+    </div>
+
+    <!-- ==========================================
+         COLUNA ESQUERDA: DESIGN SYSTEM & PALETA
+         ========================================== -->
+    <aside class="w-full lg:w-[460px] xl:w-[500px] bg-[#0F1016] border border-[#2A2D3A] rounded-3xl p-6 shadow-2xl flex-shrink-0">
+        <!-- Cabeçalho do Guia -->
+        <div class="flex items-center justify-between border-b border-[#2A2D3A] pb-4 mb-5">
+            <div>
+                <span class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#0066FF]/15 text-[#3B82F6] border border-[#0066FF]/30 mb-2">
+                    <i data-lucide="palette" class="w-3.5 h-3.5"></i> Paleta #3 • UI System
+                </span>
+                <h1 class="text-xl font-bold text-[#F3F4F6] tracking-tight">Força & Foco <span class="text-[#9CA3AF] font-normal text-base">(Clean & Confiável)</span></h1>
+            </div>
+        </div>
+
+        <p class="text-xs text-[#9CA3AF] leading-relaxed mb-5">
+            Projetada para diários de treino e periodização. Evita o preto puro (<code class="text-[#F3F4F6]">#000000</code>) para eliminar a fadiga visual (*haloing*) durante séries pesadas, usando azul elétrico para foco e cores semânticas para leitura em menos de 1 segundo. <strong class="text-[#F3F4F6]">Clique em qualquer cor para copiar o HEX.</strong>
+        </p>
+
+        <!-- 1. Cores Base & Destaque -->
+        <div class="mb-6">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-[#9CA3AF] mb-3 flex items-center justify-between">
+                <span>1. Cores Base & Destaques</span>
+                <span class="text-[10px] font-mono text-[#9CA3AF]/70">Clique p/ copiar</span>
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                <!-- Swatch 1: Fundo -->
+                <button onclick="copyHex('#0F1016', 'Fundo Principal')" class="group text-left p-2.5 rounded-xl bg-[#161821] border border-[#2A2D3A] hover:border-[#0066FF] transition-all">
+                    <div class="w-full h-10 rounded-lg bg-[#0F1016] border border-[#2A2D3A] mb-2 flex items-end justify-end p-1.5">
+                        <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/50 text-[#9CA3AF] group-hover:text-white">BG</span>
+                    </div>
+                    <p class="text-xs font-semibold text-[#F3F4F6]">Grafite Escuro</p>
+                    <p class="text-[11px] font-mono text-[#9CA3AF]">#0F1016</p>
+                </button>
+
+                <!-- Swatch 2: Cards -->
+                <button onclick="copyHex('#1C1E26', 'Superfície / Cards')" class="group text-left p-2.5 rounded-xl bg-[#161821] border border-[#2A2D3A] hover:border-[#0066FF] transition-all">
+                    <div class="w-full h-10 rounded-lg bg-[#1C1E26] border border-[#2A2D3A] mb-2 flex items-end justify-end p-1.5">
+                        <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/40 text-[#9CA3AF] group-hover:text-white">CARD</span>
+                    </div>
+                    <p class="text-xs font-semibold text-[#F3F4F6]">Cinza Frio</p>
+                    <p class="text-[11px] font-mono text-[#9CA3AF]">#1C1E26</p>
+                </button>
+
+                <!-- Swatch 3: Primária -->
+                <button onclick="copyHex('#0066FF', 'Azul Elétrico (CTA)')" class="group text-left p-2.5 rounded-xl bg-[#161821] border border-[#2A2D3A] hover:border-[#0066FF] transition-all">
+                    <div class="w-full h-10 rounded-lg bg-[#0066FF] mb-2 flex items-end justify-end p-1.5 shadow-inner">
+                        <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/30 text-white">CTA</span>
+                    </div>
+                    <p class="text-xs font-semibold text-[#F3F4F6]">Azul Elétrico</p>
+                    <p class="text-[11px] font-mono text-[#9CA3AF]">#0066FF</p>
+                </button>
+
+                <!-- Swatch 4: Secundária Âmbar -->
+                <button onclick="copyHex('#F59E0B', 'Âmbar / Dourado (PR & Alerta)')" class="group text-left p-2.5 rounded-xl bg-[#161821] border border-[#2A2D3A] hover:border-[#F59E0B] transition-all">
+                    <div class="w-full h-10 rounded-lg bg-[#F59E0B] mb-2 flex items-end justify-end p-1.5">
+                        <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/30 text-white">PR/TIMER</span>
+                    </div>
+                    <p class="text-xs font-semibold text-[#F3F4F6]">Âmbar Estímulo</p>
+                    <p class="text-[11px] font-mono text-[#9CA3AF]">#F59E0B</p>
+                </button>
+
+                <!-- Swatch 5: Texto Principal -->
+                <button onclick="copyHex('#F3F4F6', 'Texto Principal')" class="group text-left p-2.5 rounded-xl bg-[#161821] border border-[#2A2D3A] hover:border-[#0066FF] transition-all">
+                    <div class="w-full h-10 rounded-lg bg-[#F3F4F6] mb-2 flex items-end justify-end p-1.5">
+                        <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/20 text-[#0F1016] font-bold">TXT 1</span>
+                    </div>
+                    <p class="text-xs font-semibold text-[#F3F4F6]">Branco Suave</p>
+                    <p class="text-[11px] font-mono text-[#9CA3AF]">#F3F4F6</p>
+                </button>
+
+                <!-- Swatch 6: Texto Secundário -->
+                <button onclick="copyHex('#9CA3AF', 'Texto Secundário')" class="group text-left p-2.5 rounded-xl bg-[#161821] border border-[#2A2D3A] hover:border-[#0066FF] transition-all">
+                    <div class="w-full h-10 rounded-lg bg-[#9CA3AF] mb-2 flex items-end justify-end p-1.5">
+                        <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/30 text-white">TXT 2</span>
+                    </div>
+                    <p class="text-xs font-semibold text-[#F3F4F6]">Cinza Médio</p>
+                    <p class="text-[11px] font-mono text-[#9CA3AF]">#9CA3AF</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. Gradientes Sutis -->
+        <div class="mb-6">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-[#9CA3AF] mb-3">2. Gradientes Sutis (Dinamismo sem Poluição)</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <button onclick="copyHex('linear-gradient(135deg, #0066FF 0%, #2563EB 100%)', 'Gradiente Primário')" class="p-3 rounded-xl bg-gradient-primary text-left shadow-lg shadow-[#0066FF]/15 hover:opacity-95 transition">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-bold text-white">Gradiente Foco (Primário)</span>
+                        <i data-lucide="copy" class="w-3.5 h-3.5 text-white/80"></i>
+                    </div>
+                    <p class="text-[10px] font-mono text-white/90">#0066FF → #2563EB (135°)</p>
+                </button>
+
+                <button onclick="copyHex('linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', 'Gradiente Âmbar PR')" class="p-3 rounded-xl bg-gradient-amber text-left shadow-lg shadow-[#F59E0B]/15 hover:opacity-95 transition">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-bold text-[#0F1016]">Gradiente Recorde (PR)</span>
+                        <i data-lucide="copy" class="w-3.5 h-3.5 text-[#0F1016]/80"></i>
+                    </div>
+                    <p class="text-[10px] font-mono text-[#0F1016]/90 font-semibold">#F59E0B → #D97706 (135°)</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- 3. Cores Semânticas de Treino -->
+        <div class="mb-6">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-[#9CA3AF] mb-3">3. Cores Semânticas (Feedback Instantâneo)</h2>
+            <div class="space-y-2">
+                <!-- Verde -->
+                <div onclick="copyHex('#22C55E', 'Verde Semântico (Concluído)')" class="cursor-pointer flex items-center justify-between p-2.5 rounded-xl bg-[#22C55E]/10 border border-[#22C55E]/30 hover:bg-[#22C55E]/15 transition">
+                    <div class="flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-lg bg-[#22C55E] text-[#0F1016] font-bold flex items-center justify-center text-xs shadow">
+                            <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+                        </span>
+                        <div>
+                            <p class="text-xs font-bold text-[#F3F4F6]">Série Concluída / Descanso Pronto</p>
+                            <p class="text-[11px] text-[#9CA3AF]">Linha fica sutilmente verde + Tag de carga extra</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-mono font-semibold text-[#22C55E]">#22C55E</span>
+                </div>
+
+                <!-- Amarelo -->
+                <div onclick="copyHex('#EAB308', 'Amarelo Semântico (Aquecimento/Descanso)')" class="cursor-pointer flex items-center justify-between p-2.5 rounded-xl bg-[#EAB308]/10 border border-[#EAB308]/30 hover:bg-[#EAB308]/15 transition">
+                    <div class="flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-lg bg-[#EAB308]/20 border border-[#EAB308] text-[#EAB308] font-mono font-bold flex items-center justify-center text-xs">
+                            W
+                        </span>
+                        <div>
+                            <p class="text-xs font-bold text-[#F3F4F6]">Warm-up (Aquecimento) & Timer Ativo</p>
+                            <p class="text-[11px] text-[#9CA3AF]">Não contabiliza como série de trabalho válida</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-mono font-semibold text-[#EAB308]">#EAB308</span>
+                </div>
+
+                <!-- Vermelho -->
+                <div onclick="copyHex('#EF4444', 'Vermelho Semântico (Falha/Drop-set)')" class="cursor-pointer flex items-center justify-between p-2.5 rounded-xl bg-[#EF4444]/10 border border-[#EF4444]/30 hover:bg-[#EF4444]/15 transition">
+                    <div class="flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-lg bg-[#EF4444]/20 border border-[#EF4444] text-[#EF4444] font-mono font-bold flex items-center justify-center text-xs">
+                            F
+                        </span>
+                        <div>
+                            <p class="text-xs font-bold text-[#F3F4F6]">Série até a Falha (Failure) / Finalizar</p>
+                            <p class="text-[11px] text-[#9CA3AF]">Alerta de fadiga neural alta na periodização</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-mono font-semibold text-[#EF4444]">#EF4444</span>
+                </div>
+
+                <!-- Azul / Roxo -->
+                <div onclick="copyHex('#8B5CF6', 'Roxo Semântico (Bi-set / PR)')" class="cursor-pointer flex items-center justify-between p-2.5 rounded-xl bg-[#8B5CF6]/10 border border-[#8B5CF6]/30 hover:bg-[#8B5CF6]/15 transition">
+                    <div class="flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-lg bg-[#8B5CF6]/20 border border-[#8B5CF6] text-[#8B5CF6] font-mono font-bold flex items-center justify-center text-[10px]">
+                            BI
+                        </span>
+                        <div>
+                            <p class="text-xs font-bold text-[#F3F4F6]">Bi-set Conjugado & Novo PR</p>
+                            <p class="text-[11px] text-[#9CA3AF]">Conecta dois exercícios sem pausa entre eles</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-mono font-semibold text-[#8B5CF6]">#8B5CF6</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dica Interativa -->
+        <div class="p-3.5 rounded-2xl bg-[#1C1E26] border border-[#2A2D3A] flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-[#0066FF]/15 text-[#0066FF] mt-0.5">
+                <i data-lucide="mouse-pointer-click" class="w-4 h-4"></i>
+            </div>
+            <div class="text-xs text-[#9CA3AF] leading-relaxed">
+                <strong class="text-[#F3F4F6] block mb-0.5">Teste o Protótipo ao lado:</strong>
+                Clique nas tags de série (<span class="text-[#EAB308] font-mono">W</span>, <span class="text-[#F3F4F6] font-mono">1</span>, <span class="text-[#EF4444] font-mono">F</span>) para alternar o status semântico, marque o check <span class="text-[#22C55E] font-bold">✓</span>, teste o cronômetro de descanso ou alterne entre as 3 abas inferiores.
+            </div>
+        </div>
+    </aside>
+
+    <!-- ==========================================
+         COLUNA DIREITA: MOCKUP DO SMARTPHONE
+         ========================================== -->
+    <main class="flex flex-col items-center justify-center flex-1 w-full">
+        
+        <!-- Seletor Rápido de Telas no Topo do Celular -->
+        <div class="flex items-center gap-2 mb-4 bg-[#1C1E26] p-1.5 rounded-2xl border border-[#2A2D3A]">
+            <button onclick="switchTab('workout')" id="top-tab-workout" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all bg-gradient-primary text-white shadow">
+                1. Treino Ativo
+            </button>
+            <button onclick="switchTab('dashboard')" id="top-tab-dashboard" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all text-[#9CA3AF] hover:text-[#F3F4F6]">
+                2. Periodização & PRs
+            </button>
+            <button onclick="switchTab('lab')" id="top-tab-lab" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all text-[#9CA3AF] hover:text-[#F3F4F6]">
+                3. Simulador Semântico
+            </button>
+        </div>
+
+        <!-- Moldura do Smartphone -->
+        <div class="relative w-full max-w-[410px] h-[820px] bg-[#0F1016] rounded-[46px] border-[10px] border-[#222530] shadow-[0_25px_70px_-15px_rgba(0,102,255,0.22)] flex flex-col overflow-hidden select-none">
+            
+            <!-- Status Bar Mobile -->
+            <div class="h-11 px-6 flex items-center justify-between bg-[#0F1016] z-30 flex-shrink-0">
+                <span class="text-xs font-mono font-semibold text-[#F3F4F6]">09:41</span>
+                <div class="w-24 h-4 bg-[#07080B] rounded-full flex items-center justify-end px-2">
+                    <span class="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse"></span>
+                </div>
+                <div class="flex items-center gap-1.5 text-[#F3F4F6]">
+                    <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+                    <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+                    <i data-lucide="battery-full" class="w-4 h-4 text-[#22C55E]"></i>
+                </div>
+            </div>
+
+            <!-- Banner Dinâmico de Alerta Semântico (Oculto por padrão, ativado em PRs ou no Simulador) -->
+            <div id="mobile-alert-banner" class="hidden mx-4 mt-1 mb-2 p-3 rounded-2xl border transition-all duration-300 z-30 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <span id="mobile-alert-icon" class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs">🏆</span>
+                    <div>
+                        <p id="mobile-alert-title" class="text-xs font-bold text-[#F3F4F6]">Novo Recorde Pessoal!</p>
+                        <p id="mobile-alert-desc" class="text-[10px] text-[#9CA3AF]">Volume superado em +2kg.</p>
+                    </div>
+                </div>
+                <button onclick="hideMobileAlert()" class="text-[#9CA3AF] hover:text-white p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- ==========================================
+                 TELA 1: EXECUÇÃO DO TREINO ATIVO
+                 ========================================== -->
+            <div id="screen-workout" class="flex-1 overflow-y-auto phone-scroll px-4 pb-36 space-y-4">
+                
+                <!-- Header Fixo do Treino -->
+                <div class="sticky top-0 pt-2 pb-3 bg-[#0F1016]/95 backdrop-blur-md z-20 border-b border-[#2A2D3A]">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-[#0066FF] animate-ping"></span>
+                                <span class="text-[10px] font-mono uppercase tracking-wider text-[#3B82F6] font-bold">Mesociclo 2 • Semana 4</span>
+                            </div>
+                            <h2 class="text-base font-extrabold text-[#F3F4F6] tracking-tight mt-0.5">Treino A — Peito & Tríceps</h2>
+                        </div>
+                        <button onclick="triggerSemanticDemo('finish')" class="px-3 py-1.5 rounded-xl bg-[#EF4444]/15 hover:bg-[#EF4444]/25 border border-[#EF4444]/40 text-[#EF4444] text-xs font-bold transition flex items-center gap-1.5">
+                            <i data-lucide="square" class="w-3 h-3 fill-current"></i>
+                            Finalizar
+                        </button>
+                    </div>
+
+                    <!-- Sub-barra de Tempo & Volume -->
+                    <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-[#2A2D3A]/60 text-xs">
+                        <div class="flex items-center gap-1.5 text-[#9CA3AF]">
+                            <i data-lucide="clock" class="w-3.5 h-3.5 text-[#0066FF]"></i>
+                            <span>Duração:</span>
+                            <span id="workout-elapsed" class="font-mono font-bold text-[#F3F4F6]">42:18</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-[#9CA3AF]">
+                            <i data-lucide="dumbbell" class="w-3.5 h-3.5 text-[#F59E0B]"></i>
+                            <span>Volume:</span>
+                            <span id="total-volume" class="font-mono font-bold text-[#F3F4F6]">8.420 kg</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span class="px-2 py-0.5 rounded-md bg-[#F59E0B]/15 border border-[#F59E0B]/30 text-[#F59E0B] font-mono text-[10px] font-bold">
+                                🏆 1 PR Hoje
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card de Progresso do Treino (Gradiente Sutil Azul) -->
+                <div class="p-3.5 rounded-2xl bg-gradient-card-highlight border border-[#0066FF]/30 shadow-lg">
+                    <div class="flex items-center justify-between text-xs mb-2">
+                        <span class="font-semibold text-[#F3F4F6] flex items-center gap-1.5">
+                            <i data-lucide="zap" class="w-3.5 h-3.5 text-[#0066FF] fill-current"></i>
+                            Meta de Intensidade da Sessão
+                        </span>
+                        <span id="progress-label" class="font-mono font-bold text-[#3B82F6]">75% concluído</span>
+                    </div>
+                    <div class="w-full h-2 rounded-full bg-[#0F1016] overflow-hidden p-0.5 border border-[#2A2D3A]">
+                        <div id="progress-bar" class="h-full rounded-full bg-gradient-primary transition-all duration-500" style="width: 75%"></div>
+                    </div>
+                    <div class="flex justify-between items-center mt-2 text-[11px] text-[#9CA3AF]">
+                        <span>Séries válidas: <strong id="valid-sets-count" class="text-[#F3F4F6] font-mono">3/4</strong></span>
+                        <span class="text-[#22C55E] font-medium flex items-center gap-1">
+                            <i data-lucide="trending-up" class="w-3 h-3"></i> +4.2% vs semana passada
+                        </span>
+                    </div>
+                </div>
+
+                <!-- CARD DE EXERCÍCIO 1: Supino Inclinado com Halteres -->
+                <div class="rounded-2xl bg-[#1C1E26] border border-[#2A2D3A] overflow-hidden shadow-md">
+                    <!-- Header do Exercício -->
+                    <div class="p-3.5 border-b border-[#2A2D3A] flex items-start justify-between">
+                        <div class="flex gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#0066FF]/15 border border-[#0066FF]/30 flex items-center justify-center text-[#0066FF] font-bold flex-shrink-0">
+                                A1
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-[#F3F4F6] leading-snug">Supino Inclinado c/ Halteres</h3>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-[10px] font-medium text-[#9CA3AF] bg-[#0F1016] px-2 py-0.5 rounded border border-[#2A2D3A]">
+                                        Alvo: 3x 6-8 reps (RIR 1)
+                                    </span>
+                                    <span class="text-[10px] font-mono text-[#F59E0B] flex items-center gap-0.5">
+                                        <i data-lucide="flame" class="w-3 h-3"></i> Top Set: 38kg
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="text-[#9CA3AF] hover:text-[#F3F4F6] p-1">
+                            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Cabeçalho da Tabela de Séries -->
+                    <div class="grid grid-cols-12 gap-1 px-3 py-2 bg-[#14161D] text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] items-center">
+                        <div class="col-span-2 text-center">Série</div>
+                        <div class="col-span-4">Anterior</div>
+                        <div class="col-span-2 text-center">KG</div>
+                        <div class="col-span-2 text-center">Reps</div>
+                        <div class="col-span-2 text-right pr-1">Status</div>
+                    </div>
+
+                    <!-- Linhas de Séries Renderizadas via JS -->
+                    <div id="sets-container" class="divide-y divide-[#2A2D3A]/50">
+                        <!-- Preenchido dinamicamente pelo script -->
+                    </div>
+
+                    <!-- Rodapé do Card de Exercício -->
+                    <div class="p-2.5 bg-[#161820] border-t border-[#2A2D3A] flex items-center justify-between gap-2">
+                        <button onclick="addNewSet()" class="flex-1 py-2 rounded-xl bg-[#0F1016] hover:bg-[#242733] border border-[#2A2D3A] text-xs font-semibold text-[#F3F4F6] transition flex items-center justify-center gap-1.5">
+                            <i data-lucide="plus" class="w-3.5 h-3.5 text-[#0066FF]"></i>
+                            Adicionar Série
+                        </button>
+                        <div class="px-2.5 py-1.5 rounded-xl bg-[#8B5CF6]/10 border border-[#8B5CF6]/30 text-[#8B5CF6] text-[10px] font-semibold flex items-center gap-1">
+                            <i data-lucide="link-2" class="w-3 h-3"></i>
+                            Bi-set c/ A2
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conector Visual de Bi-set (Roxo Semântico) -->
+                <div class="flex items-center justify-center -my-2 relative z-10">
+                    <div class="px-3 py-0.5 rounded-full bg-[#1C1E26] border border-[#8B5CF6]/50 text-[#8B5CF6] text-[10px] font-mono font-bold flex items-center gap-1 shadow">
+                        <i data-lucide="arrow-down-up" class="w-3 h-3"></i> Sem descanso → Ir para A2
+                    </div>
+                </div>
+
+                <!-- CARD DE EXERCÍCIO 2 (Resumo Compacto do Bi-set) -->
+                <div class="rounded-2xl bg-[#1C1E26] border border-[#8B5CF6]/30 p-3.5 shadow-md">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-[#8B5CF6]/15 border border-[#8B5CF6]/40 flex items-center justify-center text-[#8B5CF6] font-bold text-xs">
+                                A2
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-[#F3F4F6]">Crucifixo Máquina (Peck Deck)</h3>
+                                <p class="text-[11px] text-[#9CA3AF]">3 séries • 12 a 15 reps • Pico de contração 2s</p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-lg bg-[#22C55E]/15 text-[#22C55E] font-mono text-xs font-bold border border-[#22C55E]/30">
+                            2/3 ✓
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ==========================================
+                 TELA 2: DASHBOARD & PERIODIZAÇÃO
+                 ========================================== -->
+            <div id="screen-dashboard" class="hidden flex-1 overflow-y-auto phone-scroll px-4 pb-28 space-y-4 pt-2">
+                
+                <!-- Saudação do Atleta -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-[#9CA3AF]">Quinta-feira • Bloco de Força</p>
+                        <h2 class="text-lg font-extrabold text-[#F3F4F6]">Olá, Lucas Andrade</h2>
+                    </div>
+                    <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F59E0B]/15 border border-[#F59E0B]/30 text-[#F59E0B] text-xs font-bold">
+                        <i data-lucide="flame" class="w-3.5 h-3.5 fill-current"></i> 14 dias
+                    </div>
+                </div>
+
+                <!-- Card Hero com Gradiente Sutil Azul (#0066FF -> #2563EB) -->
+                <div class="p-4 rounded-2xl bg-gradient-primary text-white shadow-xl shadow-[#0066FF]/20 relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-black/25 text-white/90 font-semibold">
+                                Próxima Sessão • Amanhã
+                            </span>
+                            <span class="text-xs font-mono font-bold bg-white/20 px-2 py-0.5 rounded-md">
+                                ~55 min
+                            </span>
+                        </div>
+                        <h3 class="text-lg font-extrabold tracking-tight">Treino B — Costas & Bíceps</h3>
+                        <p class="text-xs text-white/85 mt-0.5 mb-4">Foco em Remada Curvada (Top Set) + Puxada Alta</p>
+                        
+                        <button onclick="switchTab('workout')" class="w-full py-2.5 rounded-xl bg-[#0F1016] hover:bg-[#1C1E26] text-[#F3F4F6] font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg">
+                            <i data-lucide="play" class="w-3.5 h-3.5 text-[#0066FF] fill-current"></i>
+                            Visualizar Planilha de Treino
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Evolução de Volume Semanal -->
+                <div class="p-4 rounded-2xl bg-[#1C1E26] border border-[#2A2D3A]">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-[#9CA3AF]">Periodização • Volume Semanal</h3>
+                            <p class="text-sm font-bold text-[#F3F4F6] mt-0.5">42.850 kg <span class="text-xs font-mono text-[#22C55E] font-normal">(+8.4%)</span></p>
+                        </div>
+                        <span class="px-2 py-1 rounded-lg bg-[#0066FF]/15 border border-[#0066FF]/30 text-[#3B82F6] text-[10px] font-mono font-bold">
+                            Semana 4 (Pico)
+                        </span>
+                    </div>
+
+                    <!-- Barras do Gráfico -->
+                    <div class="grid grid-cols-5 gap-2.5 items-end h-32 pt-4 px-1 border-b border-[#2A2D3A]">
+                        <!-- Sem 1 -->
+                        <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                            <span class="text-[9px] font-mono text-[#9CA3AF]">31k</span>
+                            <div class="w-full rounded-t-lg bg-[#2A2D3A] h-[52%]"></div>
+                        </div>
+                        <!-- Sem 2 -->
+                        <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                            <span class="text-[9px] font-mono text-[#9CA3AF]">35k</span>
+                            <div class="w-full rounded-t-lg bg-[#2A2D3A] h-[65%]"></div>
+                        </div>
+                        <!-- Sem 3 -->
+                        <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                            <span class="text-[9px] font-mono text-[#9CA3AF]">39k</span>
+                            <div class="w-full rounded-t-lg bg-[#0066FF]/50 h-[78%]"></div>
+                        </div>
+                        <!-- Sem 4 (Atual - Pico c/ PR) -->
+                        <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                            <span class="text-[9px] font-mono font-bold text-[#F59E0B]">42.8k 🏆</span>
+                            <div class="w-full rounded-t-lg bg-gradient-primary border-t-2 border-[#F59E0B] h-[95%] shadow-lg shadow-[#0066FF]/30"></div>
+                        </div>
+                        <!-- Sem 5 (Deload Planejado) -->
+                        <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                            <span class="text-[9px] font-mono text-[#22C55E]">24k</span>
+                            <div class="w-full rounded-t-lg border border-dashed border-[#22C55E]/60 bg-[#22C55E]/15 h-[40%]"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-5 gap-2.5 text-center text-[10px] font-mono text-[#9CA3AF] mt-2">
+                        <span>S1</span>
+                        <span>S2</span>
+                        <span>S3</span>
+                        <span class="text-[#F3F4F6] font-bold">S4 (Atual)</span>
+                        <span class="text-[#22C55E]">Deload</span>
+                    </div>
+                </div>
+
+                <!-- Recordes Pessoais (PRs) Recentes -->
+                <div>
+                    <div class="flex items-center justify-between mb-2.5">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-[#9CA3AF]">Recordes Batidos no Mesociclo</h3>
+                        <span class="text-[11px] text-[#F59E0B] font-semibold">Ver todos</span>
+                    </div>
+
+                    <div class="space-y-2.5">
+                        <!-- Card PR 1 -->
+                        <div class="p-3 rounded-2xl bg-[#1C1E26] border border-[#2A2D3A] flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-amber text-[#0F1016] flex items-center justify-center font-bold shadow">
+                                    <i data-lucide="trophy" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-[#F3F4F6]">Agachamento Livre Barra</h4>
+                                    <p class="text-[11px] font-mono text-[#9CA3AF]">140 kg × 5 reps <span class="text-[#F59E0B]">(1RM est: 158kg)</span></p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 rounded-lg bg-[#22C55E]/15 border border-[#22C55E]/30 text-[#22C55E] font-mono text-xs font-bold">
+                                +5.0 kg
+                            </span>
+                        </div>
+
+                        <!-- Card PR 2 -->
+                        <div class="p-3 rounded-2xl bg-[#1C1E26] border border-[#2A2D3A] flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-[#0066FF]/15 border border-[#0066FF]/40 text-[#3B82F6] flex items-center justify-center font-bold">
+                                    <i data-lucide="award" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-[#F3F4F6]">Supino Inclinado Halteres</h4>
+                                    <p class="text-[11px] font-mono text-[#9CA3AF]">38 kg × 8 reps <span class="text-[#3B82F6]">(Hoje)</span></p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 rounded-lg bg-[#22C55E]/15 border border-[#22C55E]/30 text-[#22C55E] font-mono text-xs font-bold">
+                                +2.0 kg
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 TELA 3: LABORATÓRIO DE ESTADOS SEMÂNTICOS
+                 ========================================== -->
+            <div id="screen-lab" class="hidden flex-1 overflow-y-auto phone-scroll px-4 pb-28 space-y-4 pt-2">
+                <div>
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-[#3B82F6] font-bold">Teste Interativo de UI</span>
+                    <h2 class="text-base font-extrabold text-[#F3F4F6]">Simulador de Estados Semânticos</h2>
+                    <p class="text-xs text-[#9CA3AF] mt-0.5">Dispare os alertas abaixo para ver como as cores semânticas guiam o usuário cansado sem exigir leitura longa.</p>
+                </div>
+
+                <!-- Botões de Disparo de Estados -->
+                <div class="space-y-2.5">
+                    <button onclick="triggerSemanticDemo('pr')" class="w-full p-3.5 rounded-2xl bg-[#1C1E26] hover:bg-[#242733] border border-[#F59E0B]/40 text-left transition flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-9 h-9 rounded-xl bg-gradient-amber text-[#0F1016] flex items-center justify-center font-bold">🏆</span>
+                            <div>
+                                <p class="text-xs font-bold text-[#F3F4F6]">Simular Novo Recorde (PR Batido)</p>
+                                <p class="text-[11px] text-[#9CA3AF]">Usa Âmbar <code class="text-[#F59E0B]">#F59E0B</code> + Azul <code class="text-[#3B82F6]">#3B82F6</code></p>
+                            </div>
+                        </div>
+                        <i data-lucide="play" class="w-4 h-4 text-[#F59E0B]"></i>
+                    </button>
+
+                    <button onclick="triggerSemanticDemo('rest_done')" class="w-full p-3.5 rounded-2xl bg-[#1C1E26] hover:bg-[#242733] border border-[#22C55E]/40 text-left transition flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-9 h-9 rounded-xl bg-[#22C55E]/20 border border-[#22C55E] text-[#22C55E] flex items-center justify-center font-bold">
+                                <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                            </span>
+                            <div>
+                                <p class="text-xs font-bold text-[#F3F4F6]">Simular Descanso Finalizado (Pronto!)</p>
+                                <p class="text-[11px] text-[#9CA3AF]">Muda o cronômetro para Verde <code class="text-[#22C55E]">#22C55E</code></p>
+                            </div>
+                        </div>
+                        <i data-lucide="play" class="w-4 h-4 text-[#22C55E]"></i>
+                    </button>
+
+                    <button onclick="triggerSemanticDemo('failure')" class="w-full p-3.5 rounded-2xl bg-[#1C1E26] hover:bg-[#242733] border border-[#EF4444]/40 text-left transition flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-9 h-9 rounded-xl bg-[#EF4444]/20 border border-[#EF4444] text-[#EF4444] flex items-center justify-center font-mono font-bold">F</span>
+                            <div>
+                                <p class="text-xs font-bold text-[#F3F4F6]">Simular Alerta de Fadiga / Falha</p>
+                                <p class="text-[11px] text-[#9CA3AF]">Usa Vermelho <code class="text-[#EF4444]">#EF4444</code> e sugere +30s descanso</p>
+                            </div>
+                        </div>
+                        <i data-lucide="play" class="w-4 h-4 text-[#EF4444]"></i>
+                    </button>
+                </div>
+
+                <!-- Guia de Contraste em Sala de Musculação -->
+                <div class="p-4 rounded-2xl bg-[#1C1E26] border border-[#2A2D3A] space-y-3">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-[#9CA3AF]">Por que essa paleta funciona na academia?</h3>
+                    <div class="space-y-2 text-xs text-[#9CA3AF]">
+                        <div class="flex items-start gap-2">
+                            <span class="text-[#22C55E] font-bold">✓</span>
+                            <p><strong class="text-[#F3F4F6]">Zero Haloing:</strong> O fundo <code class="text-[#F3F4F6]">#0F1016</code> evita que letras brancas "borrem" na visão do aluno após uma série pesada.</p>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-[#22C55E] font-bold">✓</span>
+                            <p><strong class="text-[#F3F4F6]">Números Monoespaçados:</strong> Cargas e cronômetros usam fonte <em>JetBrains Mono</em> para que os dígitos nunca pulem de lugar.</p>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="text-[#22C55E] font-bold">✓</span>
+                            <p><strong class="text-[#F3F4F6]">Hierarquia Semântica:</strong> O azul elétrico guia a navegação, enquanto verde, amarelo e vermelho são exclusivos de feedback do treino.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 CRONÔMETRO FLUTUANTE DE DESCANSO (STICKY)
+                 ========================================== -->
+            <div id="rest-timer-bar" class="absolute bottom-[68px] left-3 right-3 rounded-2xl bg-[#1C1E26]/95 backdrop-blur-md border border-[#F59E0B]/50 p-3 shadow-2xl z-30 transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <!-- Indicador e Tempo -->
+                    <div class="flex items-center gap-2.5">
+                        <div id="timer-badge-icon" class="w-9 h-9 rounded-xl bg-[#F59E0B]/15 border border-[#F59E0B]/40 flex items-center justify-center text-[#F59E0B]">
+                            <i data-lucide="timer" class="w-5 h-5 animate-pulse-subtle"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <span id="timer-status-label" class="text-[10px] font-bold uppercase tracking-wider text-[#F59E0B]">Descanso em andamento</span>
+                            </div>
+                            <div class="flex items-baseline gap-1">
+                                <span id="rest-timer-display" class="text-base font-mono font-extrabold text-[#F3F4F6]">01:15</span>
+                                <span class="text-[11px] font-mono text-[#9CA3AF]">/ 02:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controles Rápidos -->
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="adjustRestTimer(-15)" class="px-2 py-1.5 rounded-lg bg-[#0F1016] hover:bg-[#2A2D3A] border border-[#2A2D3A] text-[11px] font-mono font-semibold text-[#9CA3AF] hover:text-white transition">
+                            -15s
+                        </button>
+                        <button onclick="adjustRestTimer(15)" class="px-2 py-1.5 rounded-lg bg-[#0F1016] hover:bg-[#2A2D3A] border border-[#2A2D3A] text-[11px] font-mono font-semibold text-[#9CA3AF] hover:text-white transition">
+                            +15s
+                        </button>
+                        <button onclick="completeRestNow()" id="timer-skip-btn" class="px-2.5 py-1.5 rounded-lg bg-gradient-amber text-[#0F1016] text-[11px] font-bold transition shadow">
+                            Pronto
+                        </button>
+                    </div>
+                </div>
+                <!-- Mini Barra de Progresso do Descanso -->
+                <div class="w-full h-1 bg-[#0F1016] rounded-full overflow-hidden mt-2">
+                    <div id="rest-timer-progress" class="h-full bg-[#F59E0B] transition-all duration-300" style="width: 62%"></div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 BOTTOM NAVIGATION BAR DO APP
+                 ========================================== -->
+            <nav class="h-[62px] bg-[#14161D] border-t border-[#2A2D3A] px-6 flex items-center justify-between z-30 flex-shrink-0">
+                <button onclick="switchTab('workout')" id="nav-workout" class="flex flex-col items-center gap-1 text-[#0066FF] transition">
+                    <i data-lucide="dumbbell" class="w-5 h-5"></i>
+                    <span class="text-[10px] font-bold">Treino Ativo</span>
+                </button>
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center gap-1 text-[#9CA3AF] hover:text-[#F3F4F6] transition">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    <span class="text-[10px] font-medium">Periodização</span>
+                </button>
+                <button onclick="switchTab('lab')" id="nav-lab" class="flex flex-col items-center gap-1 text-[#9CA3AF] hover:text-[#F3F4F6] transition">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    <span class="text-[10px] font-medium">Semântica</span>
+                </button>
+            </nav>
+
+        </div>
+    </main>
+
+    <!-- ==========================================
+         LÓGICA INTERATIVA DO PROTÓTIPO
+         ========================================== -->
+    <script>
+        // Estado inicial das séries do Supino Inclinado
+        let workoutSets = [
+            { id: 1, type: 'W', prev: '24kg × 12', kg: 24, reps: 12, done: true, isPR: false },
+            { id: 2, type: '1', prev: '36kg × 8',  kg: 38, reps: 8,  done: true, isPR: true },
+            { id: 3, type: 'F', prev: '36kg × 7',  kg: 38, reps: 7,  done: true, isPR: false },
+            { id: 4, type: '2', prev: '34kg × 8',  kg: 36, reps: 8,  done: false, isPR: false }
+        ];
+
+        // Mapa de estilos semânticos para o botão de Tipo de Série
+        const setTypeStyles = {
+            'W': {
+                label: 'W',
+                title: 'Warm-up (Aquecimento)',
+                badgeClass: 'bg-[#EAB308]/20 border-[#EAB308] text-[#EAB308]'
+            },
+            '1': {
+                label: '1',
+                title: 'Série de Trabalho',
+                badgeClass: 'bg-[#0F1016] border-[#2A2D3A] text-[#F3F4F6]'
+            },
+            '2': {
+                label: '2',
+                title: 'Série de Trabalho',
+                badgeClass: 'bg-[#0F1016] border-[#2A2D3A] text-[#F3F4F6]'
+            },
+            '3': {
+                label: '3',
+                title: 'Série de Trabalho',
+                badgeClass: 'bg-[#0F1016] border-[#2A2D3A] text-[#F3F4F6]'
+            },
+            'F': {
+                label: 'F',
+                title: 'Série até a Falha (Failure)',
+                badgeClass: 'bg-[#EF4444]/20 border-[#EF4444] text-[#EF4444]'
+            },
+            'PR': {
+                label: 'PR',
+                title: 'Recorde Pessoal',
+                badgeClass: 'bg-[#F59E0B]/20 border-[#F59E0B] text-[#F59E0B]'
+            }
+        };
+
+        // Renderiza as linhas de séries na Tela 1
+        function renderSets() {
+            const container = document.getElementById('sets-container');
+            container.innerHTML = '';
+
+            let completedCount = 0;
+
+            workoutSets.forEach((set, index) => {
+                if (set.done) completedCount++;
+
+                const style = setTypeStyles[set.type] || setTypeStyles['1'];
+
+                // Define o fundo da linha conforme o status semântico
+                let rowBg = 'bg-transparent hover:bg-[#222530]/40';
+                if (set.done && set.isPR) {
+                    rowBg = 'bg-gradient-pr-row';
+                } else if (set.done) {
+                    rowBg = 'bg-[#22C55E]/[0.10]';
+                }
+
+                const row = document.createElement('div');
+                row.className = `grid grid-cols-12 gap-1 px-3 py-2.5 items-center transition-colors ${rowBg}`;
+
+                row.innerHTML = `
+                    <!-- Coluna 1: Tipo Semântico da Série (Clicável) -->
+                    <div class="col-span-2 flex justify-center">
+                        <button onclick="cycleSetType(${index})" title="Clique para alternar: Aquecimento (W), Trabalho, Falha (F)" 
+                            class="w-7 h-7 rounded-lg border font-mono text-xs font-bold flex items-center justify-center transition transform active:scale-90 ${style.badgeClass}">
+                            ${style.label}
+                        </button>
+                    </div>
+
+                    <!-- Coluna 2: Carga Anterior + Tag PR se houver -->
+                    <div class="col-span-4 pr-1">
+                        <span class="text-xs font-mono text-[#9CA3AF] block">${set.prev}</span>
+                        ${set.isPR ? `
+                            <span class="inline-flex items-center gap-0.5 text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/40 mt-0.5">
+                                🏆 PR +2kg
+                            </span>
+                        ` : ''}
+                        ${set.type === 'W' ? `<span class="text-[9px] text-[#EAB308] block">Aquecimento</span>` : ''}
+                        ${set.type === 'F' ? `<span class="text-[9px] text-[#EF4444] block">Falha Muscular</span>` : ''}
+                    </div>
+
+                    <!-- Coluna 3: Input KG -->
+                    <div class="col-span-2 flex justify-center">
+                        <input type="number" value="${set.kg}" onchange="updateSetData(${index}, 'kg', this.value)"
+                            class="w-12 py-1 text-center rounded-lg bg-[#0F1016] border ${set.done ? 'border-[#22C55E]/40 text-[#F3F4F6]' : 'border-[#2A2D3A] text-[#F3F4F6]'} font-mono text-xs font-bold focus:outline-none focus:border-[#0066FF]">
+                    </div>
+
+                    <!-- Coluna 4: Input REPS -->
+                    <div class="col-span-2 flex justify-center">
+                        <input type="number" value="${set.reps}" onchange="updateSetData(${index}, 'reps', this.value)"
+                            class="w-11 py-1 text-center rounded-lg bg-[#0F1016] border ${set.done ? 'border-[#22C55E]/40 text-[#F3F4F6]' : 'border-[#2A2D3A] text-[#F3F4F6]'} font-mono text-xs font-bold focus:outline-none focus:border-[#0066FF]">
+                    </div>
+
+                    <!-- Coluna 5: Botão Check (Verde Semântico) -->
+                    <div class="col-span-2 flex justify-end pr-1">
+                        <button onclick="toggleSetDone(${index})" 
+                            class="w-8 h-7 rounded-lg flex items-center justify-center transition-all transform active:scale-90 ${
+                                set.done 
+                                ? 'bg-[#22C55E] text-[#0F1016] shadow-md shadow-[#22C55E]/25' 
+                                : 'bg-[#0F1016] border border-[#2A2D3A] text-[#9CA3AF] hover:border-[#22C55E]'
+                            }">
+                            <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(row);
+            });
+
+            // Atualiza a barra de progresso do treino
+            const totalSets = workoutSets.length;
+            const pct = Math.round((completedCount / totalSets) * 100);
+            document.getElementById('progress-bar').style.width = `${pct}%`;
+            document.getElementById('progress-label').textContent = `${pct}% concluído`;
+            document.getElementById('valid-sets-count').textContent = `${completedCount}/${totalSets}`;
+
+            lucide.createIcons();
+        }
+
+        // Alterna o tipo da série entre W (Aquecimento) -> 1 (Trabalho) -> F (Falha)
+        function cycleSetType(index) {
+            const order = ['W', '1', 'F'];
+            const current = workoutSets[index].type;
+            const nextIndex = (order.indexOf(current) + 1) % order.length;
+            workoutSets[index].type = order[nextIndex];
+            renderSets();
+
+            const labels = {
+                'W': 'Série marcada como Aquecimento (W - Amarelo)',
+                '1': 'Série marcada como Trabalho Válido (Padrão)',
+                'F': 'Série marcada até a Falha (F - Vermelho)'
+            };
+            showToast(labels[workoutSets[index].type], workoutSets[index].type === 'W' ? '#EAB308' : workoutSets[index].type === 'F' ? '#EF4444' : '#0066FF');
+        }
+
+        // Atualiza KG ou REPS e verifica se bateu PR (>36kg)
+        function updateSetData(index, field, val) {
+            const num = parseFloat(val) || 0;
+            workoutSets[index][field] = num;
+            if (field === 'kg' && num > 36 && workoutSets[index].type !== 'W') {
+                workoutSets[index].isPR = true;
+                triggerSemanticDemo('pr');
+            } else if (field === 'kg' && num <= 36) {
+                workoutSets[index].isPR = false;
+            }
+            renderSets();
+        }
+
+        // Marca/Desmarca série como concluída e reinicia o cronômetro de descanso
+        function toggleSetDone(index) {
+            workoutSets[index].done = !workoutSets[index].done;
+            renderSets();
+
+            if (workoutSets[index].done) {
+                resetRestTimer(90); // Inicia 1m30s de descanso
+                showToast('Série concluída! Cronômetro de descanso iniciado.', '#22C55E');
+            }
+        }
+
+        // Adiciona nova série
+        function addNewSet() {
+            const nextNum = workoutSets.length;
+            workoutSets.push({
+                id: Date.now(),
+                type: String(nextNum),
+                prev: '34kg × 8',
+                kg: 36,
+                reps: 8,
+                done: false,
+                isPR: false
+            });
+            renderSets();
+            showToast('Nova série adicionada à planilha', '#0066FF');
+        }
+
+        // ==========================================
+        // LÓGICA DO CRONÔMETRO DE DESCANSO SEMÂNTICO
+        // ==========================================
+        let restSeconds = 75;
+        const maxRestSeconds = 120;
+        let timerInterval = null;
+
+        function startRestTimerLoop() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (restSeconds > 0) {
+                    restSeconds--;
+                    updateRestTimerUI();
+                    if (restSeconds === 0) {
+                        completeRestNow();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateRestTimerUI() {
+            const mins = String(Math.floor(restSeconds / 60)).padStart(2, '0');
+            const secs = String(restSeconds % 60).padStart(2, '0');
+            document.getElementById('rest-timer-display').textContent = `${mins}:${secs}`;
+            
+            const pct = Math.min(100, Math.round((restSeconds / maxRestSeconds) * 100));
+            document.getElementById('rest-timer-progress').style.width = `${pct}%`;
+        }
+
+        function adjustRestTimer(delta) {
+            restSeconds = Math.max(0, restSeconds + delta);
+            setTimerRunningStyle();
+            updateRestTimerUI();
+        }
+
+        function resetRestTimer(seconds) {
+            restSeconds = seconds;
+            setTimerRunningStyle();
+            updateRestTimerUI();
+        }
+
+        function setTimerRunningStyle() {
+            const bar = document.getElementById('rest-timer-bar');
+            const status = document.getElementById('timer-status-label');
+            const progress = document.getElementById('rest-timer-progress');
+            const iconBox = document.getElementById('timer-badge-icon');
+
+            bar.className = "absolute bottom-[68px] left-3 right-3 rounded-2xl bg-[#1C1E26]/95 backdrop-blur-md border border-[#F59E0B]/50 p-3 shadow-2xl z-30 transition-all duration-300";
+            status.textContent = "Descanso em andamento";
+            status.className = "text-[10px] font-bold uppercase tracking-wider text-[#F59E0B]";
+            progress.className = "h-full bg-[#F59E0B] transition-all duration-300";
+            iconBox.className = "w-9 h-9 rounded-xl bg-[#F59E0B]/15 border border-[#F59E0B]/40 flex items-center justify-center text-[#F59E0B]";
+        }
+
+        // Muda o cronômetro para Verde Semântico (#22C55E) quando pronto
+        function completeRestNow() {
+            restSeconds = 0;
+            updateRestTimerUI();
+
+            const bar = document.getElementById('rest-timer-bar');
+            const status = document.getElementById('timer-status-label');
+            const progress = document.getElementById('rest-timer-progress');
+            const iconBox = document.getElementById('timer-badge-icon');
+
+            bar.className = "absolute bottom-[68px] left-3 right-3 rounded-2xl bg-[#14261D]/95 backdrop-blur-md border border-[#22C55E] p-3 shadow-2xl z-30 transition-all duration-300";
+            status.textContent = "✓ Pronto para a próxima série!";
+            status.className = "text-[10px] font-bold uppercase tracking-wider text-[#22C55E]";
+            progress.style.width = "100%";
+            progress.className = "h-full bg-[#22C55E] transition-all duration-300";
+            iconBox.className = "w-9 h-9 rounded-xl bg-[#22C55E] text-[#0F1016] flex items-center justify-center font-bold";
+        }
+
+        // ==========================================
+        // NAVEGAÇÃO ENTRE AS 3 TELAS DO PROTÓTIPO
+        // ==========================================
+        function switchTab(tab) {
+            const screens = ['workout', 'dashboard', 'lab'];
+            screens.forEach(s => {
+                document.getElementById(`screen-${s}`).classList.add('hidden');
+                // Botões da barra inferior
+                const navBtn = document.getElementById(`nav-${s}`);
+                navBtn.className = "flex flex-col items-center gap-1 text-[#9CA3AF] hover:text-[#F3F4F6] transition";
+                // Botões do seletor superior
+                const topBtn = document.getElementById(`top-tab-${s}`);
+                topBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all text-[#9CA3AF] hover:text-[#F3F4F6]";
+            });
+
+            // Ativa a tela escolhida
+            document.getElementById(`screen-${tab}`).classList.remove('hidden');
+            document.getElementById(`nav-${tab}`).className = "flex flex-col items-center gap-1 text-[#0066FF] transition";
+            document.getElementById(`top-tab-${tab}`).className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all bg-gradient-primary text-white shadow";
+
+            // Oculta o timer flutuante apenas na aba de Periodização para visualização limpa
+            const timerBar = document.getElementById('rest-timer-bar');
+            if (tab === 'dashboard') {
+                timerBar.classList.add('hidden');
+            } else {
+                timerBar.classList.remove('hidden');
+            }
+        }
+
+        // ==========================================
+        // DISPARADOR DE ALERTAS SEMÂNTICOS (DEMO)
+        // ==========================================
+        function triggerSemanticDemo(type) {
+            const banner = document.getElementById('mobile-alert-banner');
+            const icon = document.getElementById('mobile-alert-icon');
+            const title = document.getElementById('mobile-alert-title');
+            const desc = document.getElementById('mobile-alert-desc');
+
+            banner.classList.remove('hidden');
+
+            if (type === 'pr') {
+                banner.className = "mx-4 mt-1 mb-2 p-3 rounded-2xl border border-[#F59E0B] bg-[#F59E0B]/15 transition-all duration-300 z-30 flex items-center justify-between shadow-lg";
+                icon.className = "w-8 h-8 rounded-xl bg-gradient-amber text-[#0F1016] flex items-center justify-center font-bold text-sm";
+                icon.textContent = "🏆";
+                title.textContent = "Novo Recorde Pessoal (PR)!";
+                desc.textContent = "Supino Inclinado: 38kg × 8 reps (+2kg vs anterior)";
+                showToast("Alerta Semântico: PR Batido (#F59E0B)", "#F59E0B");
+            } else if (type === 'rest_done') {
+                completeRestNow();
+                banner.className = "mx-4 mt-1 mb-2 p-3 rounded-2xl border border-[#22C55E] bg-[#22C55E]/15 transition-all duration-300 z-30 flex items-center justify-between shadow-lg";
+                icon.className = "w-8 h-8 rounded-xl bg-[#22C55E] text-[#0F1016] flex items-center justify-center font-bold text-sm";
+                icon.textContent = "✓";
+                title.textContent = "Descanso Concluído!";
+                desc.textContent = "ATP recuperado. Inicie a Série 4 agora.";
+                showToast("Alerta Semântico: Descanso Pronto (#22C55E)", "#22C55E");
+            } else if (type === 'failure' || type === 'finish') {
+                banner.className = "mx-4 mt-1 mb-2 p-3 rounded-2xl border border-[#EF4444] bg-[#EF4444]/15 transition-all duration-300 z-30 flex items-center justify-between shadow-lg";
+                icon.className = "w-8 h-8 rounded-xl bg-[#EF4444] text-white flex items-center justify-center font-mono font-bold text-sm";
+                icon.textContent = "F";
+                title.textContent = type === 'finish' ? "Finalizar Sessão de Treino?" : "Série até a Falha Registrada";
+                desc.textContent = type === 'finish' ? "3/4 séries concluídas • 1 PR registrado hoje." : "Fadiga alta detectada. Descanso ajustado para 02:30.";
+                showToast("Alerta Semântico: Falha / Ação Crítica (#EF4444)", "#EF4444");
+            }
+        }
+
+        function hideMobileAlert() {
+            document.getElementById('mobile-alert-banner').classList.add('hidden');
+        }
+
+        // ==========================================
+        // UTILITÁRIO DE CÓPIA DE HEX COM FEEDBACK
+        // ==========================================
+        function copyHex(code, name) {
+            const tempInput = document.createElement('textarea');
+            tempInput.value = code;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            showToast(`${name}: ${code} copiado!`, code.startsWith('#') ? code : '#0066FF');
+        }
+
+        let toastTimeout = null;
+        function showToast(message, dotColor = '#0066FF') {
+            const toast = document.getElementById('global-toast');
+            const text = document.getElementById('toast-text');
+            const icon = document.getElementById('toast-icon');
+
+            text.textContent = message;
+            icon.style.backgroundColor = dotColor;
+
+            toast.classList.remove('translate-y-[-150%]', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-[-150%]', 'opacity-0');
+            }, 2600);
+        }
+
+        // Inicialização
+        window.onload = function () {
+            renderSets();
+            startRestTimerLoop();
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>
