@@ -1,0 +1,6 @@
+[submodule "ProjetoAcademiaAPI"]
+	path = ProjetoAcademiaAPI
+	url = https://github.com/Zanatta97/ProjetoAcademiaAPI.git
+[submodule "ProjetoAcademiaFront"]
+	path = ProjetoAcademiaFront
+	url = https://github.com/Zanatta97/ProjetoAcademiaFront.git
