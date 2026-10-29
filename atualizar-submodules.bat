@@ -94,9 +94,20 @@ if "%URL%"=="" (
     goto :eof
 )
 
+rem Registra sem "git submodule add": ele roda pelo sh.exe do Git, que trava
+rem no fork com o hook do Avecto. Os comandos abaixo são nativos e gravam o
+rem mesmo .gitmodules, .git/config e gitlink que o submodule add gravaria.
 echo   Registrando como submodule: %URL%
-git submodule add "%URL%" "%FILHO%"
-if errorlevel 1 set "ERRO=1"
+git config -f .gitmodules "submodule.%FILHO%.path" "%FILHO%" || goto :erro_registro
+git config -f .gitmodules "submodule.%FILHO%.url" "%URL%" || goto :erro_registro
+git config "submodule.%FILHO%.url" "%URL%" || goto :erro_registro
+git config "submodule.%FILHO%.active" true || goto :erro_registro
+git -c advice.addEmbeddedRepo=false add "%FILHO%" || goto :erro_registro
+goto :eof
+
+:erro_registro
+echo   ERRO: não foi possível registrar %FILHO% como submodule.
+set "ERRO=1"
 goto :eof
 
 rem ------------------------------------------------------------------
